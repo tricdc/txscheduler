@@ -13,30 +13,46 @@
     <textarea rows="6" cols="100" id="txDataInput" placeholder="signed tx data"></textarea>
     <table id="table" style="width: 50%">
       <tr>
-        <th>data</th>
         <th>blk#</th>
+        <th>data</th>
         <th>executed</th>
       </tr>
     </table>
     <script>
     $(document).ready(function(){
       $('#scheduleInput').click(function(){
-        console.log("schedule call");
-        $.ajax({
-          type: 'POST',
-          url: 'http://localhost:3000/Schedule?blockNumber=' + $('#blockInput').val() + '&txdata=' + $('#txDataInput').val()
-        });
+        if($('#blockInput').val() != '' && $('#txDataInput').val() != '' && $('#txDataInput').val().startsWith('0x')){
+          console.log("schedule call");
+          $.ajax({
+            type: 'POST',
+            url: 'http://localhost:3000/Schedule?blockNumber=' + $('#blockInput').val() + '&txdata=' + $('#txDataInput').val()
+          });
+
+          location.reload();
+        }else{
+          alert("invalid input");
+        }
       });
 
       $.getJSON("http://localhost:3000/schedules", function(res){
         for(var i = 0; i < res.length; i++){
           if(res[i].executed == true){
-            $('#table').append('<tr><td>' + res[i].txdata + '</td><td>' + res[i].blockNumber + '</td><td style="background-color:#A8FFB2">' + res[i].executed + '</td></tr>');
+            $('#table').append('<tr><td>' + res[i].blockNumber + '</td><td>' + res[i].txdata + '</td><td style="background-color:#A8FFB2"><a href="http://etherscan.io/tx/' + res[i].txhash + '">' + res[i].txhash + '</a></td></tr>');
           }else{
-            $('#table').append('<tr><td>' + res[i].txdata + '</td><td>' + res[i].blockNumber + '</td><td style="background-color:#FFA8A8">' + res[i].executed + '</td></tr>');
+            $('#table').append('<tr><td>' + res[i].blockNumber + '</td><td>' + res[i].txdata + '</td><td style="background-color:#FFA8A8">' + res[i].executed + '</td></tr>');
           }
         }
       });
+
+      function updateBlockNumber(){
+        var data;
+        $.getJSON("http://localhost:3000/latestblock", function(res){
+          data = res;
+        });
+        //$('#blockNumberSpan').html(data);
+      }
+
+      setInterval(updateBlockNumber, 1000);
     });
     </script>
   </body>
