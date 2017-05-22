@@ -1,0 +1,43 @@
+<html>
+  <head>
+    <link rel="stylesheet" type="text/css" href="/css/index.css" />
+    <link rel="icon" href="favicon.ico" type="image/x-icon" />
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <title>TX Scheduler</title>
+  </head>
+  <body>
+    <h1>Ethereum TX Scheduler</h1>
+    <input type="number" id="blockInput" placeholder="block number" />
+    <input type="button" id="scheduleInput" value="Schedule" />
+    <br />
+    <textarea rows="6" cols="100" id="txDataInput" placeholder="signed tx data"></textarea>
+    <table id="table" style="width: 50%">
+      <tr>
+        <th>data</th>
+        <th>blk#</th>
+        <th>executed</th>
+      </tr>
+    </table>
+    <script>
+    $(document).ready(function(){
+      $('#scheduleInput').click(function(){
+        console.log("schedule call");
+        $.ajax({
+          type: 'POST',
+          url: 'http://localhost:3000/Schedule?blockNumber=' + $('#blockInput').val() + '&txdata=' + $('#txDataInput').val()
+        });
+      });
+
+      $.getJSON("http://localhost:3000/schedules", function(res){
+        for(var i = 0; i < res.length; i++){
+          if(res[i].executed == true){
+            $('#table').append('<tr><td>' + res[i].txdata + '</td><td>' + res[i].blockNumber + '</td><td style="background-color:#A8FFB2">' + res[i].executed + '</td></tr>');
+          }else{
+            $('#table').append('<tr><td>' + res[i].txdata + '</td><td>' + res[i].blockNumber + '</td><td style="background-color:#FFA8A8">' + res[i].executed + '</td></tr>');
+          }
+        }
+      });
+    });
+    </script>
+  </body>
+</html>
