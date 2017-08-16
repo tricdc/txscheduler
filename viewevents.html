@@ -1,0 +1,32 @@
+<html>
+  <head>
+    <title>web3 event watcher</title>
+  </head>
+  <body>
+    <input id="abi" type="text" placeholder="abi" />
+    <br />
+    <input id="address" type="text" placeholder="address" />
+    <br />
+    <input type="button" onclick="startWatching()" value="watch" />
+    <br />
+    <span id="events"></span>
+  </body>
+  <script>
+    window.onload = function(){
+      console.log(web3);
+
+      function startWatching(){
+        var MyContract = web3.eth.contract(document.getElementById('abi').value);
+        var myContractInstance = MyContract.at(document.getElementById('address').value);
+
+        var events = myContractInstance.allEvents(function(err, log){
+          if(!err){
+            console.log(log);
+          }else{
+
+          }
+        });
+      }
+    }
+  </script>
+</html>
